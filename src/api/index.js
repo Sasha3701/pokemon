@@ -9,6 +9,11 @@ class Api {
     const { data } = await instance.get("pokemon", { params });
     return data;
   }
+
+  async getPokemon(id) {
+    const { data } = await instance.get(`pokemon/${id}`);
+    return data;
+  }
 }
 
 const api = new Api();

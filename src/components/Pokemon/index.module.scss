@@ -1,0 +1,45 @@
+@import "../../styles//variables.scss";
+
+@keyframes loadingAnim {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.loading {
+    color: transparent;
+    background: $loader-color;
+    animation: loadingAnim 0.8s ease-in-out infinite;
+    background-size: 400%;
+    border-radius: 8px;
+    width: 300px;
+    height: 300px;
+}
+
+.error {
+    color: transparent;
+    background: $error-color;
+    animation: loadingAnim 1.2s ease-in-out infinite;
+    background-size: 400%;
+    border-radius: 8px;
+    width: 300px;
+    height: 300px;
+}
+
+.pokemon {
+    cursor: pointer;
+    &__img {
+        transition: all 0.3s ease;
+        width: 300px;
+        height: 300px;
+    }
+    &:hover {
+        img {
+            transform: scale(1.2);
+        }
+    }
+}

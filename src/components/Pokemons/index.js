@@ -3,32 +3,28 @@ import api from "../../api";
 import { parserNextUrl } from "../../helpers";
 import { useScroll } from "../../hooks";
 import { Loader } from "../Loader";
+import { Pokemon } from "../Pokemon";
 import styles from "./index.module.scss";
 
-const fetchPokemons = async (callback, params) => {
-  try {
-    const data = await api.getPokemons(params);
-    return data;
-  } finally {
-    if (callback) {
-      callback(false);
-    }
-  }
-};
-
-export const Pokemons = () => {
+export const Pokemons = ({ onOpenModal }) => {
   const [pokemons, setPokemons] = useState(null);
   const [count, setCount] = useState(null);
   const [nextPokemonsParams, setNextPokemonsParams] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorAdditional, setErrorAdditional] = useState(false);
 
   useEffect(() => {
-    fetchPokemons().then((res) => {
-      const { count, next, results } = res;
-      setPokemons(results);
-      setCount(count);
-      setNextPokemonsParams(parserNextUrl(next));
-    });
+    api
+      .getPokemons()
+      .then(({ count, next, results }) => {
+        setPokemons(results);
+        setCount(count);
+        setNextPokemonsParams(parserNextUrl(next));
+      })
+      .catch(() => {
+        setError(true);
+      });
   }, []);
 
   const handleFetchNextPokemons = useCallback(
@@ -42,12 +38,18 @@ export const Pokemons = () => {
         pokemons.length !== count
       ) {
         setLoading(true);
-        const { next, results } = await fetchPokemons(
-          setLoading,
-          nextPokemonsParams
-        );
-        setPokemons((prevState) => [...prevState, ...results]);
-        setNextPokemonsParams(parserNextUrl(next));
+        api
+          .getPokemons(nextPokemonsParams)
+          .then(({ results, next }) => {
+            setPokemons((prevState) => [...prevState, ...results]);
+            setNextPokemonsParams(parserNextUrl(next));
+          })
+          .catch(() => {
+            setErrorAdditional(true);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       }
     },
     [nextPokemonsParams]
@@ -58,14 +60,10 @@ export const Pokemons = () => {
   return pokemons ? (
     <>
       <div className={styles.pokemons}>
-        <div className={styles.pokemons__count}>{count}</div>
-        <ul className={styles.pokemons__list}>
-          {pokemons.map((pokemon, index) => (
-            <li
-              key={`${index}_${pokemon.name}`}
-              className={styles["pokemons_list-item"]}
-            >
-              <p>{pokemon.name}</p>
+        <ul className={styles.pokemons__list} variant="woven" cols={3} gap={8}>
+          {pokemons.map(({ name }, index) => (
+            <li key={`${index}_${name}`}>
+              <Pokemon identity={name} onOpenModal={onOpenModal} />
             </li>
           ))}
         </ul>

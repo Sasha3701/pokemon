@@ -1,0 +1,10 @@
+height
+weight
+sprites
+species
+stats
+
+form
+abilities
+location_area_encounters?
+types

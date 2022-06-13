@@ -1,5 +1,7 @@
+import { Pokemons } from "./components";
+
 const App = () => {
-  return <div> App</div>;
+  return <Pokemons />;
 };
 
 export default App;
